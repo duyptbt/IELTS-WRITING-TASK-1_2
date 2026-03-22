@@ -93,6 +93,8 @@ const SectionTitle = ({ title, icon: Icon }: { title: string; icon: any }) => (
 );
 
 export default function App() {
+  const [ex1Answers, setEx1Answers] = useState<string[]>(Array(6).fill(''));
+  const [ex1Checked, setEx1Checked] = useState(false);
   const [ex2Answers, setEx2Answers] = useState<string[]>(Array(8).fill(''));
   const [ex2Checked, setEx2Checked] = useState(false);
   const [ex3Answers, setEx3Answers] = useState<string[]>(Array(6).fill(''));
@@ -109,6 +111,12 @@ export default function App() {
   // 6: fluctuated [between] June and October 2009.
   const ex2CorrectAnswers = ['from', 'to', 'at', 'by', 'to', 'during', 'from', 'between'];
 
+  const handleEx1Check = () => setEx1Checked(true);
+  const handleEx1Reset = () => {
+    setEx1Answers(Array(6).fill(''));
+    setEx1Checked(false);
+  };
+
   const handleEx2Check = () => setEx2Checked(true);
   const handleEx2Reset = () => {
     setEx2Answers(Array(8).fill(''));
@@ -123,7 +131,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Header */}
         <header className="text-center space-y-4">
@@ -147,53 +155,77 @@ export default function App() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Grammar & Reference */}
-          <div className="lg:col-span-5 space-y-8">
-            <Card className="p-6">
-              <SectionTitle title="Key Grammar Reference" icon={BookOpen} />
-              <div className="space-y-4">
-                {grammarQuestions.map((q) => (
-                  <div key={q.id} className="group">
-                    <button 
-                      onClick={() => setActiveGrammar(activeGrammar === q.id ? null : q.id)}
-                      className="w-full text-left p-4 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex items-start gap-3"
-                    >
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-indigo-100 group-hover:text-indigo-600">
+          {/* Left Column: Grammar & Reference - Sticky on Desktop */}
+          <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-8">
+            <Card className="p-6 border-indigo-100 shadow-indigo-100/20">
+              <SectionTitle title="Exercise 1: Prepositions to describe graphs" icon={BookOpen} />
+              <div className="space-y-6">
+                {grammarQuestions.map((q, idx) => (
+                  <div key={q.id} className="space-y-2">
+                    <div className="flex gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">
                         {q.id}
                       </span>
-                      <span className="text-sm font-medium text-slate-700 leading-tight">{q.question}</span>
-                    </button>
-                    <AnimatePresence>
-                      {activeGrammar === q.id && (
-                        <motion.div 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-4 pt-2 ml-9 space-y-2">
-                            <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
-                              <CheckCircle2 size={14} />
-                              <span>{q.answer}</span>
-                            </div>
-                            <div className="space-y-1">
-                              {q.examples.map((ex, i) => (
-                                <p key={i} className="text-xs text-slate-500 italic">e.g. "{ex}"</p>
-                              ))}
-                            </div>
-                          </div>
-                        </motion.div>
+                      <p className="text-sm font-medium text-slate-700 leading-tight">{q.question}</p>
+                    </div>
+                    <div className="ml-9 flex items-center gap-3">
+                      <input 
+                        className={cn(
+                          "flex-1 px-3 py-1.5 rounded-lg border text-sm transition-all",
+                          ex1Checked ? (q.answer.toLowerCase().includes((ex1Answers[idx] || '').toLowerCase().trim()) && (ex1Answers[idx] || '').trim() !== '' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500"
+                        )}
+                        value={ex1Answers[idx]}
+                        onChange={e => { const a = [...ex1Answers]; a[idx] = e.target.value; setEx1Answers(a); }}
+                        placeholder="Type answer..."
+                      />
+                      {ex1Checked && (
+                        <div className="flex-shrink-0">
+                          {q.answer.toLowerCase().includes((ex1Answers[idx] || '').toLowerCase().trim()) && (ex1Answers[idx] || '').trim() !== '' ? (
+                            <CheckCircle2 className="text-emerald-500" size={20} />
+                          ) : (
+                            <XCircle className="text-rose-500" size={20} />
+                          )}
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </div>
+                    {ex1Checked && !(q.answer.toLowerCase().includes((ex1Answers[idx] || '').toLowerCase().trim()) && (ex1Answers[idx] || '').trim() !== '') && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="ml-9 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-700 font-medium"
+                      >
+                        Correct: {q.answer}
+                      </motion.div>
+                    )}
                   </div>
                 ))}
+                
+                <div className="pt-4 flex gap-3">
+                  <button 
+                    onClick={handleEx1Check}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                  >
+                    <CheckCircle2 size={16} />
+                    Check
+                  </button>
+                  <button 
+                    onClick={handleEx1Reset}
+                    className="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors flex items-center gap-2"
+                  >
+                    <RotateCcw size={16} />
+                    Reset
+                  </button>
+                </div>
               </div>
             </Card>
 
             <Card className="p-6 bg-slate-900 text-white border-none">
-              <SectionTitle title="2009 Ebook Unit Sales" icon={TrendingUp} />
+              <div className="mb-4">
+                <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-1">Graph Reference</p>
+                <h3 className="text-lg font-semibold text-white">2009 ebook unit sales - www.fonerbooks.com</h3>
+              </div>
               <div className="h-64 w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={ebookSalesData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
@@ -227,10 +259,15 @@ export default function App() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-6 space-y-2 text-xs text-slate-400">
-                <p>• Sales rose sharply from 95 in Jan to 125 in Mar.</p>
-                <p>• Sales peaked in March and September.</p>
-                <p>• Sales fell between March and June.</p>
+              <div className="mt-8 space-y-3 text-sm text-slate-300 border-t border-slate-800 pt-6">
+                <p><span className="text-indigo-400 font-bold mr-2">a</span> The graph shows ebook sales over a one-year period.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">b</span> During the year, ebook sales fluctuated.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">c</span> Sales rose sharply from 95 units in January to 125 in March.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">d</span> Sales peaked in March and in September.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">e</span> Sales fell between March and June.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">f</span> From June to September, sales rose by 25 units.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">g</span> There was a sharp decrease in sales after September.</p>
+                <p><span className="text-indigo-400 font-bold mr-2">h</span> Overall, sales fell in 2009.</p>
               </div>
             </Card>
           </div>
@@ -239,101 +276,110 @@ export default function App() {
           <div className="lg:col-span-7 space-y-8">
             
             {/* Exercise 2 */}
-            <Card className="p-6">
+            <Card className="p-6 border-slate-200">
               <SectionTitle title="Exercise 2: Harry Potter Book Sales" icon={HelpCircle} />
               
-              <div className="h-48 w-full mb-8 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={harryPotterSalesData}>
-                    <XAxis dataKey="month" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis fontSize={10} axisLine={false} tickLine={false} domain={[0, 10]} />
-                    <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="sales" 
-                      stroke="#6366f1" 
-                      strokeWidth={2}
-                      dot={{ r: 4, fill: '#6366f1' }}
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                {/* Graph & Word Bank - Sticky within Card */}
+                <div className="xl:col-span-5 space-y-6 xl:sticky xl:top-8 self-start">
+                  <div className="h-72 w-full bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={harryPotterSalesData}>
+                        <XAxis dataKey="month" fontSize={10} axisLine={false} tickLine={false} />
+                        <YAxis fontSize={10} axisLine={false} tickLine={false} domain={[0, 10]} />
+                        <Tooltip />
+                        <Line 
+                          type="monotone" 
+                          dataKey="sales" 
+                          stroke="#6366f1" 
+                          strokeWidth={2}
+                          dot={{ r: 4, fill: '#6366f1' }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
+                    <p className="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">Word Bank</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['at', 'between', 'by', 'during', 'from', 'in', 'over', 'to'].map(prep => (
+                        <span key={prep} className="px-2 py-1 bg-white text-slate-600 rounded border border-slate-200 text-xs font-mono">
+                          {prep}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Questions */}
+                <div className="xl:col-span-7 space-y-6 text-slate-700 leading-relaxed">
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    1. Rose sharply 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[0] || '').toLowerCase() === 'from' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[0]} onChange={e => { const a = [...ex2Answers]; a[0] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
                     />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['at', 'between', 'by', 'during', 'from', 'in', 'over', 'to'].map(prep => (
-                  <span key={prep} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-sm font-mono border border-slate-200">
-                    {prep}
-                  </span>
-                ))}
-              </div>
-
-              <div className="space-y-6 text-slate-700 leading-relaxed">
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  1. Rose sharply 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[0] || '').toLowerCase() === 'from' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[0]} onChange={e => { const a = [...ex2Answers]; a[0] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  2,000 in June 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[1] || '').toLowerCase() === 'to' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[1]} onChange={e => { const a = [...ex2Answers]; a[1] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  8,000 in July.
-                </p>
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  2. Peaked 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[2] || '').toLowerCase() === 'at' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[2]} onChange={e => { const a = [...ex2Answers]; a[2] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  8,000 in July.
-                </p>
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  3. Fell 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[3] || '').toLowerCase() === 'by' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[3]} onChange={e => { const a = [...ex2Answers]; a[3] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  1,000 in August.
-                </p>
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  4. Dropped sharply 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[4] || '').toLowerCase() === 'to' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[4]} onChange={e => { const a = [...ex2Answers]; a[4] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  5,000 
-                  <input 
-                    className={cn("w-24 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[5] || '').toLowerCase() === 'during' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[5]} onChange={e => { const a = [...ex2Answers]; a[5] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  the next month.
-                </p>
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  5. Fell 
-                  <input 
-                    className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[6] || '').toLowerCase() === 'from' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[6]} onChange={e => { const a = [...ex2Answers]; a[6] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  5,000 to 4,000 in October.
-                </p>
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
-                  6. Fluctuated 
-                  <input 
-                    className={cn("w-24 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[7] || '').toLowerCase() === 'between' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
-                    value={ex2Answers[7]} onChange={e => { const a = [...ex2Answers]; a[7] = e.target.value; setEx2Answers(a); }}
-                    placeholder="..."
-                  />
-                  June and October 2009.
-                </p>
+                    2,000 in June 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[1] || '').toLowerCase() === 'to' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[1]} onChange={e => { const a = [...ex2Answers]; a[1] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    8,000 in July.
+                  </p>
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    2. Peaked 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[2] || '').toLowerCase() === 'at' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[2]} onChange={e => { const a = [...ex2Answers]; a[2] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    8,000 in July.
+                  </p>
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    3. Fell 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[3] || '').toLowerCase() === 'by' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[3]} onChange={e => { const a = [...ex2Answers]; a[3] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    1,000 in August.
+                  </p>
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    4. Dropped sharply 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[4] || '').toLowerCase() === 'to' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[4]} onChange={e => { const a = [...ex2Answers]; a[4] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    5,000 
+                    <input 
+                      className={cn("w-24 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[5] || '').toLowerCase() === 'during' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[5]} onChange={e => { const a = [...ex2Answers]; a[5] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    the next month.
+                  </p>
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    5. Fell 
+                    <input 
+                      className={cn("w-20 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[6] || '').toLowerCase() === 'from' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[6]} onChange={e => { const a = [...ex2Answers]; a[6] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    5,000 to 4,000 in October.
+                  </p>
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-3">
+                    6. Fluctuated 
+                    <input 
+                      className={cn("w-24 px-2 py-1 rounded border text-sm transition-all", ex2Checked ? ((ex2Answers[7] || '').toLowerCase() === 'between' ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200") : "focus:ring-2 focus:ring-indigo-500")}
+                      value={ex2Answers[7]} onChange={e => { const a = [...ex2Answers]; a[7] = e.target.value; setEx2Answers(a); }}
+                      placeholder="..."
+                    />
+                    June and October 2009.
+                  </p>
+                </div>
               </div>
 
               <div className="mt-8 flex gap-3">

@@ -161,6 +161,7 @@ export default function App() {
           <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-8">
             <Card className="p-6 border-indigo-100 shadow-indigo-100/20">
               <SectionTitle title="Exercise 1: Prepositions to describe graphs" icon={BookOpen} />
+              <p className="text-sm text-slate-500 mb-6 italic">Look at the graph on ebook sales and the sentences below (a-h) that describe it.</p>
               <div className="space-y-6">
                 {grammarQuestions.map((q, idx) => (
                   <div key={q.id} className="space-y-2">
@@ -278,6 +279,7 @@ export default function App() {
             {/* Exercise 2 */}
             <Card className="p-6 border-slate-200">
               <SectionTitle title="Exercise 2: Harry Potter Book Sales" icon={HelpCircle} />
+              <p className="text-sm text-slate-500 mb-6 italic">Complete the sentences below describing the graph with the prepositions in the box.</p>
               
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
                 {/* Graph & Word Bank - Sticky within Card */}

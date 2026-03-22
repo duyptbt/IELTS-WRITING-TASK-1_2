@@ -153,6 +153,23 @@ export default function App() {
           <p className="text-slate-500 max-w-2xl mx-auto text-lg">
             Master the essential grammar needed to accurately describe trends, peaks, and fluctuations in data.
           </p>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="pt-4"
+          >
+            <a 
+              href="https://ielts-writing-task-1-tau.vercel.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-indigo-600 border-2 border-indigo-100 rounded-2xl font-bold hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-sm active:scale-95"
+            >
+              <TrendingUp size={20} />
+              Go to Further Practice App
+              <ChevronRight size={20} />
+            </a>
+          </motion.div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -465,6 +482,34 @@ export default function App() {
 
           </div>
         </div>
+
+        {/* Further Practice Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <Card className="p-8 bg-gradient-to-br from-indigo-600 to-violet-700 text-white border-none shadow-xl shadow-indigo-200/50">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center md:text-left">
+                <h3 className="text-2xl font-bold">Ready for more?</h3>
+                <p className="text-indigo-100 max-w-md">
+                  Take your IELTS preparation to the next level with our specialized Writing Task 1 practice application.
+                </p>
+              </div>
+              <a 
+                href="https://ielts-writing-task-1-tau.vercel.app" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex-shrink-0 px-8 py-4 bg-white text-indigo-600 rounded-2xl font-bold hover:bg-indigo-50 transition-all shadow-lg active:scale-95 flex items-center gap-2"
+              >
+                Explore Further Practice
+                <ChevronRight size={20} />
+              </a>
+            </div>
+          </Card>
+        </motion.div>
 
         {/* Footer */}
         <footer className="pt-12 border-t border-slate-200 text-center text-slate-400 text-sm pb-8">
